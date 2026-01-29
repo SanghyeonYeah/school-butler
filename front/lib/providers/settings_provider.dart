@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class SettingsProvider extends ChangeNotifier {
   TimeOfDay _morningNotificationTime = const TimeOfDay(hour: 8, minute: 0);
   TimeOfDay _nightNotificationTime = const TimeOfDay(hour: 23, minute: 0);
-  String _speakingStyle = 'ㅈ같음'; // 유저의 원래 선호도 복구
+  String _speakingStyle = '라이벌';
   String _characterTheme = '기본';
   int _reminderMinutes = 10;
 
-  final List<String> availableStyles = ['친절함', 'ㅈ같음', '츤데레', '조용함'];
+  final List<String> availableStyles = ['친절함', '라이벌', '츤데레', '조용함'];
 
   TimeOfDay get morningNotificationTime => _morningNotificationTime;
   TimeOfDay get nightNotificationTime => _nightNotificationTime;

@@ -80,8 +80,8 @@ class CharacterProvider extends ChangeNotifier {
       CharacterActivity activity, CharacterEmotion emotion) {
     final style = _settings?.speakingStyle ?? '친절함';
 
-    if (style == 'ㅈ같음') {
-      return _getGrumpyMessage(activity, emotion);
+    if (style == '라이벌') {
+      return _getrivalMessage(activity, emotion);
     } else if (style == '츤데레') {
       return _getTsundereMessage(activity, emotion);
     } else {
@@ -115,7 +115,7 @@ class CharacterProvider extends ChangeNotifier {
     }
   }
 
-  String _getGrumpyMessage(
+  String _getrivalMessage(
       CharacterActivity activity, CharacterEmotion emotion) {
     switch (activity) {
       case CharacterActivity.focus:

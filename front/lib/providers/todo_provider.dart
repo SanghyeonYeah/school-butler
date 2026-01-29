@@ -8,7 +8,6 @@ class TodoProvider extends ChangeNotifier {
 
   List<Todo> get allTodos => List.unmodifiable(_todos);
 
-  // 샘플 데이터 넣음 (UI 테스트용)
   void addSampleData() {
     _todos.addAll([
       Todo(
@@ -41,39 +40,45 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 오늘 할 일 가져오기
+  // 오늘 할 일 가져오기: 미완료 항목 전체 + 오늘 완료한 항목
   List<Todo> getTodayTodos() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    return _todos
-        .where((todo) =>
-            !todo.isCompleted &&
-            (todo.dueDate == null ||
-                todo.dueDate!.isAfter(today.subtract(const Duration(days: 1)))))
-        .toList()
-      ..sort((a, b) => a.priority.compareTo(b.priority));
+    return _todos.where((todo) {
+      // 1. 아직 완료되지 않은 모든 할 일
+      if (!todo.isCompleted) return true;
+      
+      // 2. 오늘 완료 처리된 할 일 (createdAt이나 dueDate가 오늘인 경우 포함)
+      final isFromToday = todo.createdAt.year == today.year &&
+          todo.createdAt.month == today.month &&
+          todo.createdAt.day == today.day;
+          
+      return isFromToday;
+    }).toList()
+      ..sort((a, b) {
+        if (a.isCompleted != b.isCompleted) {
+          return a.isCompleted ? 1 : -1;
+        }
+        return a.priority.compareTo(b.priority);
+      });
   }
 
-  // 완료되지 않은 할 일
   List<Todo> getIncompleteTodos() {
     return _todos.where((todo) => !todo.isCompleted).toList()
       ..sort((a, b) => a.priority.compareTo(b.priority));
   }
 
-  // 완료된 할 일
   List<Todo> getCompletedTodos() {
     return _todos.where((todo) => todo.isCompleted).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
-  // 할 일 추가
   Future<void> addTodo(Todo todo) async {
     _todos.add(todo);
     notifyListeners();
   }
 
-  // 할 일 수정
   Future<void> updateTodo(Todo todo) async {
     final index = _todos.indexWhere((t) => t.id == todo.id);
     if (index != -1) {
@@ -82,20 +87,19 @@ class TodoProvider extends ChangeNotifier {
     }
   }
 
-  // 할 일 삭제
   Future<void> deleteTodo(String id) async {
     _todos.removeWhere((todo) => todo.id == id);
     notifyListeners();
   }
 
-  // 할 일 완료 토글
   Future<void> toggleComplete(String id) async {
-    final todo = _todos.firstWhere((t) => t.id == id);
-    todo.isCompleted = !todo.isCompleted;
-    notifyListeners();
+    final index = _todos.indexWhere((t) => t.id == id);
+    if (index != -1) {
+      _todos[index].isCompleted = !_todos[index].isCompleted;
+      notifyListeners();
+    }
   }
 
-  // 새 할 일 생성 헬퍼
   Todo createTodo({
     required String title,
     DateTime? dueDate,

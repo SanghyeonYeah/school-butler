@@ -39,153 +39,118 @@ class _TodoListItemState extends State<TodoListItem> {
             ),
           ],
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTapDown: (_) => setState(() => _scale = 0.97),
-            onTapUp: (_) => setState(() => _scale = 1.0),
-            onTapCancel: () => setState(() => _scale = 1.0),
-            onTap: () {
-              // TODO: 상세 화면으로 이동
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  // 체크박스
-                  GestureDetector(
-                    onTap: () {
-                      provider.toggleComplete(widget.todo.id);
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 26,
-                      height: 26,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: widget.todo.isCompleted
-                              ? Colors.green
-                              : _getPriorityColor(widget.todo.priority),
-                          width: 2,
-                        ),
-                        color: widget.todo.isCompleted ? Colors.green : null,
-                      ),
-                      child: widget.todo.isCompleted
-                          ? const Icon(
-                              Icons.check,
-                              size: 18,
-                              color: Colors.white,
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  // 내용
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.todo.title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            decoration: widget.todo.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
-                            color: widget.todo.isCompleted
-                                ? Colors.grey
-                                : Colors.black87,
-                          ),
-                        ),
-                        if (widget.todo.dueDate != null) ...[
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: 14,
-                                color: _isOverdue(widget.todo.dueDate!)
-                                    ? Colors.redAccent
-                                    : Colors.grey[500],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 왼쪽 구분 띠
+                Container(
+                  width: 6,
+                  color: widget.todo.isCompleted 
+                      ? Colors.grey[300] 
+                      : _getPriorityColor(widget.todo.priority),
+                ),
+                Expanded(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTapDown: (_) => setState(() => _scale = 0.97),
+                      onTapUp: (_) => setState(() => _scale = 1.0),
+                      onTapCancel: () => setState(() => _scale = 1.0),
+                      onTap: () {
+                        // TODO: 상세 화면으로 이동
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.todo.title,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: widget.todo.isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: widget.todo.isCompleted
+                                          ? Colors.grey
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  if (widget.todo.dueDate != null) ...[
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.calendar_today_rounded,
+                                          size: 14,
+                                          color: _isOverdue(widget.todo.dueDate!)
+                                              ? Colors.redAccent
+                                              : Colors.grey[500],
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          DateFormat('M월 d일')
+                                              .format(widget.todo.dueDate!),
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: _isOverdue(widget.todo.dueDate!)
+                                                ? Colors.redAccent
+                                                : Colors.grey[500],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
                               ),
-                              const SizedBox(width: 6),
-                              Text(
-                                DateFormat('M월 d일')
-                                    .format(widget.todo.dueDate!),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: _isOverdue(widget.todo.dueDate!)
-                                      ? Colors.redAccent
-                                      : Colors.grey[500],
+                            ),
+                            
+                            // 무광 플랫 하트 아이콘 (크기 일관성 유지)
+                            GestureDetector(
+                              onTap: () {
+                                provider.toggleComplete(widget.todo.id);
+                              },
+                              behavior: HitTestBehavior.opaque,
+                              child: Container(
+                                width: 48,
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  widget.todo.isCompleted 
+                                      ? Icons.favorite 
+                                      : Icons.favorite_outline,
+                                  size: 32,
+                                  color: widget.todo.isCompleted 
+                                      ? Colors.red.shade400 
+                                      : Colors.grey.shade300,
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  // 우선순위 점
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getPriorityColor(widget.todo.priority)
-                          .withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _getPriorityText(widget.todo.priority),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: _getPriorityColor(widget.todo.priority),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // 메뉴 버튼
-                  PopupMenuButton(
-                    icon:
-                        Icon(Icons.more_vert_rounded, color: Colors.grey[400]),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit_rounded, size: 20),
-                            SizedBox(width: 12),
-                            Text('수정'),
+                            ),
+
+                            PopupMenuButton(
+                              icon: Icon(Icons.more_vert_rounded, color: Colors.grey[400]),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(value: 'delete', child: Text('삭제')),
+                              ],
+                              onSelected: (value) {
+                                if (value == 'delete') _showDeleteDialog(context, provider);
+                              },
+                            ),
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete_rounded,
-                                size: 20, color: Colors.redAccent),
-                            SizedBox(width: 12),
-                            Text('삭제',
-                                style: TextStyle(color: Colors.redAccent)),
-                          ],
-                        ),
-                      ),
-                    ],
-                    onSelected: (value) {
-                      if (value == 'delete') {
-                        _showDeleteDialog(context, provider);
-                      }
-                    },
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -193,26 +158,11 @@ class _TodoListItemState extends State<TodoListItem> {
     );
   }
 
-  String _getPriorityText(int priority) {
-    switch (priority) {
-      case 1:
-        return '긴급';
-      case 3:
-        return '낮음';
-      default:
-        return '보통';
-    }
-  }
-
   Color _getPriorityColor(int priority) {
     switch (priority) {
-      case 1:
-        return Colors.redAccent;
-      case 3:
-        return Colors.blueAccent;
-      case 2:
-      default:
-        return Colors.orangeAccent;
+      case 1: return Colors.redAccent;
+      case 3: return Colors.blueAccent;
+      default: return Colors.orangeAccent;
     }
   }
 
@@ -230,17 +180,11 @@ class _TodoListItemState extends State<TodoListItem> {
         title: const Text('할 일 삭제'),
         content: const Text('이 할 일을 삭제하시겠습니까?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
           TextButton(
             onPressed: () {
               provider.deleteTodo(widget.todo.id);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('할 일이 삭제되었습니다')),
-              );
             },
             child: const Text('삭제', style: TextStyle(color: Colors.redAccent)),
           ),
