@@ -56,6 +56,12 @@ class JwtProvider(
     fun getUserId(token: String): Long =
         parseClaims(token).subject.toLong()
 
+    /** Access Token 만료 시간 반환 (ms) */
+    fun getAccessTokenExpiryMs(): Long = jwtConfig.accessTokenExpiryMs
+
+    /** Refresh Token 만료 시간 반환 (ms) */
+    fun getRefreshTokenExpiryMs(): Long = jwtConfig.refreshTokenExpiryMs
+
     private fun parseClaims(token: String): Claims =
         Jwts.parser()
             .verifyWith(key)
